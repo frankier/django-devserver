@@ -84,8 +84,8 @@ DEVSERVER_DEFAULT_ADDR = '127.0.0.1'
 DEVSERVER_DEFAULT_PORT = '8000'
   The default port to bind to.
 
-DEVSERVER_WSGI_MIDDLEWARE
-  A list of additional WSGI middleware to apply to the ``runserver`` command.
+DEVSERVER_WSGI_MIDDLEWARE = []
+  A list of additional WSGI middleware to apply to the ``runserver`` command. This is a list of callables or strings which are paths to callables which return middleware objects when passed a WSGI application. Alternatively if a 3-tuple is provided of the form (callable-ish, args, kwargs) then callable-ish will be called with app, args and kwargs.
 
 DEVSERVER_MODULES = []
   A list of devserver modules to load.

@@ -181,9 +181,21 @@ class Command(BaseCommand):
             mixin = SocketServer.ThreadingMixIn
 
         middleware = getattr(settings, 'DEVSERVER_WSGI_MIDDLEWARE', [])
+        def get_callable(callable_ref):
+            if callable(callable_ref):
+                return callable_ref
+            module, name = callable_ref.rsplit('.', 1)
+            return getattr(__import__(module, {}, {}, [name]), name)
         for middleware in middleware:
-            module, class_name = middleware.rsplit('.', 1)
-            app = getattr(__import__(module, {}, {}, [class_name]), class_name)(app)
+            try:
+                middleware, args, kwargs = middleware
+            except TypeError:
+                middleware = get_callable(middleware)
+            else:
+                inner_middleware = get_callable(middleware)
+                def middleware(app):
+                    return inner_middleware(app, *args, **kwargs)
+            app = middleware(app)
 
         if options['use_dozer']:
             from dozer import Dozer
